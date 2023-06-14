@@ -1,7 +1,7 @@
-#define SKETCH "prize.ino"
+#define SKETCH "lid2.ino"
 #define VERSION "1.0"
-#define NODENAME "prize"
 
+//Version 1.0- Simplified from lid 2021 for 2022.
 
 /*
    Using Wemos D1 Mini
@@ -13,9 +13,11 @@
 
 const int LED_ON = 1;
 const int LED_OFF = 0;
+int sensorPin = A0;    // potentiometer used in motortest (seup.ino)
+int sensorValue = 0;
 
-const int closedSwitch = D1;              //Limit pin, stops the motor. (yellow)
-const int openSwitch = D2;                //Limit pin, stops the motor. (pink)
+const int CLOSED_SWITCH = D1;              //Limit pin, stops the motor. (yellow)
+const int OPEN_SWITCH = D2;                //Limit pin, stops the motor. (pink)
 const int MOTOR_PIN = D3;                 //Controls the motor. (violet)
 const int BUTTON_PIN = D4;                //Action button (Also LED_BUILTIN)
 const int EYES_PIN = D5;                  //Eyes
@@ -62,46 +64,6 @@ noDelay lidCloseTime(2000, closeTheLid, false);
 // --------------- button declarations ---------------
 volatile bool buttonFlag = false;         //True when sction button is pressed
 volatile bool loopFlag = false;           //True when loop button is pressed
-
-
-
-//--------------- WiFiMulti declarations ---------------
-#include <ESP8266WiFiMulti.h>
-ESP8266WiFiMulti wifiMulti;
-
-// WiFi connect timeout per AP. Increase when connecting takes longer.
-const uint32_t connectTimeoutMs = 5000;
-
-// setup_wifi vars
-char macBuffer[24];       // Holds the last three digits of the MAC, in hex.
-char hostNamePrefix[] = NODENAME;
-char hostName[12];        // Holds hostNamePrefix + the last three bytes of the MAC address.
-
-
-
-//--------------- OTA declarations ---------------
-#include <ArduinoOTA.h>
-
-
-
-//--------------- MQTT declarations ---------------
-#include "Kaywinnet.h"
-#include <ESP8266WiFi.h>        // Connect (and reconnect) an ESP8266 to the a WiFi network.
-#include <PubSubClient.h>       // connect to a MQTT broker and publish/subscribe messages in topics.
-// Declare an object of class WiFiClient
-// Declare an object of class PubSubClient, which receives as input of the constructor the previously defined WiFiClient.
-// The constructor MUST be unique on the network. (Does it?)
-WiFiClient monsterBoxLid;
-PubSubClient client(monsterBoxLid);
-
-// Make the MQTT topics
-// Declare strings for the topics. Topics will be created in setup_mqtt().
-char statusTopic[20];
-char cmndTopic[20];
-char rssiTopic[20];
-
-const char *mqttServer = MQTT_SERVER;         // Local broker defined in Kaywinnet.h
-const int mqttPort = 1883;
 
 
 

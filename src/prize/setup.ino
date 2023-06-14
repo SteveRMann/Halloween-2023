@@ -1,7 +1,7 @@
 //=============== setup ===============
 void setup() {
-  pinMode(CLOSED_SWITCH, INPUT_PULLUP);
-  pinMode(OPEN_SWITCH, INPUT_PULLUP);
+  pinMode(closedSwitch, INPUT_PULLUP);
+  pinMode(openSwitch, INPUT_PULLUP);
   pinMode (BUTTON_PIN, INPUT_PULLUP);
   pinMode (LOOP_PIN, INPUT_PULLUP);
   pinMode(BLUE_LED_PIN, OUTPUT);
@@ -10,40 +10,12 @@ void setup() {
   pinMode(FAN_PIN, OUTPUT);
 
   beginSerial();
+  ///setup_wifi();
+  //setup_wifiMulti();
+  setup_mqtt();                         //Generate the topics
+  client.setServer(mqttServer, mqttPort);
+  mqttConnect();
 
-  //lidState = 0;     //Open
-
-  attachInterrupt(BUTTON_PIN, actionButtonHandler, RISING);
-  attachInterrupt(LOOP_PIN, loopButtonHandler, RISING);
-
-  //  button.attachDoubleClick(doubleclick);
-  //  button.attachClick(singleClick);
-  //  button.attachLongPressStop(longPress);
-
-
-  //Cycle through the eyes' LED intensity.
-  Serial.println(F("Test the eyes."));
-  for (int j = 0; j < 4; j++) {
-    for (int i = 10; i < 255; i++) {
-      analogWrite(EYES_PIN, i);
-      delay(2);
-    }
-    for (int i = 255; i > 10; i--) {
-      analogWrite(EYES_PIN, i);
-      delay(2);
-    }
-  }
-  eyesVal = EYES_MIN;
-  analogWrite(EYES_PIN, eyesVal);
-  delay(1000);
-
-  //Fan
-  Serial.println(F("Test the fan."));
-  analogWrite(FAN_PIN, FAN_MAX);
-  delay(2000);
-  analogWrite(FAN_PIN, FAN_MIN);
-  delay(2000);
-  analogWrite(FAN_PIN, FAN_OFF);
 
   //Lid
   Serial.println(F("Test the lid."));
@@ -55,9 +27,6 @@ void setup() {
   loopFlag = false;
 
 
-  //Start the timers
-  eyes_ON();
-  //eyes_OFF();
 
   /*
     // ========== MOTORTEST ==========
@@ -74,7 +43,6 @@ void setup() {
     }
   */
 
-  loopFlag = true;        //Go right into looping
-  
-  Serial.println(F("===================="));
+
+
 } //End of setup()

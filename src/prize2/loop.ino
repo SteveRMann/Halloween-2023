@@ -1,8 +1,12 @@
 //=============== loop ===============
 void loop() {
-  ArduinoOTA.handle();
 
- mqttReconnect();          //Make sure we stay connected to the mqtt broker
+  //Check the timers
+  eyesLED_onTime.update();
+  eyesLED_offTime.update();        //Blink eye
+  eyesLED_dim.update();            //Dim eye
+  lidOpenTime.update();
+  lidCloseTime.update();
 
   if (buttonFlag) {
     Serial.println(F("Action button pressed"));
@@ -13,12 +17,15 @@ void loop() {
 
 
   if (loopFlag) {
-    Serial.println(F("Loop button pressed"));
+    //Serial.println(F("Looping"));
     int closeTime = random(2500, 6000);
     Serial.print(F("Closing lid for "));
     Serial.print(closeTime);
     Serial.println(F(" ms"));
     closeTheLid();
     delay(closeTime);
+    lidRandom();                    //Open the lid for a random time
   }
+
+  eyes_DIM();
 }

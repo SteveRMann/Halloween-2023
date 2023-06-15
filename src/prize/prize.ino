@@ -5,11 +5,10 @@
 
 /*
    Using Wemos D1 Mini
-   Project is a package delivery system.  
+   Project is a package delivery system.
    A half-round motorized tray collects the item to deliver, and on command, rotates 180°, dropping
    the item in a catch tray, then completes the 360° rotation, collecting the next item.
 */
-
 
 const int LED_ON = 1;
 const int LED_OFF = 0;
@@ -33,30 +32,6 @@ const long int SECONDS = 1000;            //ms per second
 //bool motorOnFlag = false;
 const int MIN_PWM = 200;                  //Anything lower and the motor won't start
 int motorPwm = MIN_PWM;                   //PWM value for motor on.
-// (not used) int lidState;
-// (not used) int bounceCount = 0;
-bool randomFlag = false;                  //Set true to open/close untill stopped.
-
-
-// --------------- noDelay ---------------
-#include <NoDelay.h>
-
-// prototypes (noDelay callbacks)
-void eyes_ON();
-void eyes_OFF();
-void eyes_DIM();
-void lidRandom();
-void closeTheLid();
-
-
-//Create noDelay objects
-// objName(time,callback,isEnabled);
-noDelay eyesLED_onTime(1000, eyes_ON , false);
-noDelay eyesLED_offTime(1000, eyes_OFF, false);
-noDelay eyesLED_dim(200, eyes_DIM , true);           //How fast to dim the LED. Lower is faster
-noDelay lidOpenTime(1000, lidRandom, false);
-noDelay lidCloseTime(2000, closeTheLid, false);
-
 
 
 // --------------- button declarations ---------------
@@ -65,22 +40,13 @@ volatile bool loopFlag = false;           //True when loop button is pressed
 
 
 
-//--------------- WiFiMulti declarations ---------------
-#include <ESP8266WiFiMulti.h>
-ESP8266WiFiMulti wifiMulti;
-
-// WiFi connect timeout per AP. Increase when connecting takes longer.
-const uint32_t connectTimeoutMs = 5000;
-
 // setup_wifi vars
-char macBuffer[24];       // Holds the last three digits of the MAC, in hex.
-char hostNamePrefix[] = NODENAME;
-char hostName[12];        // Holds hostNamePrefix + the last three bytes of the MAC address.
+#include "ESP8266WiFi.h"        // Not needed if also using the Arduino OTA Library...
+#include <Kaywinnet.h>          // WiFi credentials
+char macBuffer[24];             // Holds the last three digits of the MAC, in hex.
+char hostName[24];              // Holds nodeName + the last three bytes of the MAC address.
 
 
-
-//--------------- OTA declarations ---------------
-#include <ArduinoOTA.h>
 
 
 
@@ -90,15 +56,14 @@ char hostName[12];        // Holds hostNamePrefix + the last three bytes of the 
 #include <PubSubClient.h>       // connect to a MQTT broker and publish/subscribe messages in topics.
 // Declare an object of class WiFiClient
 // Declare an object of class PubSubClient, which receives as input of the constructor the previously defined WiFiClient.
-// The constructor MUST be unique on the network. (Does it?)
-WiFiClient monsterBoxLid;
-PubSubClient client(monsterBoxLid);
+WiFiClient xyzzy;
+PubSubClient client(xyzzy);
 
 // Make the MQTT topics
 // Declare strings for the topics. Topics will be created in setup_mqtt().
+char mqttMsg[24];               // Holds the incoming MQTT message
 char statusTopic[20];
 char cmndTopic[20];
-char rssiTopic[20];
 
 const char *mqttServer = MQTT_SERVER;         // Local broker defined in Kaywinnet.h
 const int mqttPort = 1883;

@@ -1,13 +1,3 @@
-// ********************** Function to display a string for debugging. **********************
-void dbugs(const char *s, const char *v) {
-  //Show a string variable. Enter with the string description and the string.
-  //Example dbugs("My String= ",myString);
-  Serial.print(s);
-  Serial.print (F("\""));
-  Serial.print(v);
-  Serial.println(F("\""));
-}
-
 
 void beginSerial() {
   Serial.begin(115200);
@@ -38,7 +28,7 @@ void openTheLid() {
   startTheMotor();
   while (digitalRead(openSwitch)) yield();     //Wait for the limit switch
   analogWrite(MOTOR_PIN, 0);                   //Stop the motor
-  Serial.println(F("OPEN"));
+  ///Serial.println(F("OPEN"));
 }
 
 // ---------- Load the next prize ----------
@@ -46,7 +36,7 @@ void closeTheLid() {
   startTheMotor();
   while (digitalRead(closedSwitch)) yield();        //Wait for the limit switch
   analogWrite(MOTOR_PIN, 0);                        //Stop the motor
-  Serial.println(F("CLOSED"));
+  ///Serial.println(F("CLOSED"));
 }
 
 

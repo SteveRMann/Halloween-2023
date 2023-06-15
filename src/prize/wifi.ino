@@ -1,192 +1,72 @@
+// setup_wifi
+// ============================= Connect the ESP to the router =============================
+// Connect to WiFi network so we can reach the MQTT broker and publish messages to topics.
 
-// ================================== connectWiFi() ==================================
-void connectWiFi() {
+/*
+  Make sure you include at the start of the sketch:
+  #define SKETCH "<sketchname>"
+
+  #include "ESP8266WiFi.h"        // Not needed if also using the Arduino OTA Library...
+  #include <Kaywinnet.h>          // WiFi credentials
+
+  char macBuffer[24];             // Holds the last three digits of the MAC, in hex.
+  char hostName[24];              // Holds nodeName + the last three bytes of the MAC address.
+
+*/
+
+void setup_wifi() {
 #ifndef Kaywinnet
-#include "D:\River Documents\Arduino\libraries\Kaywinnet.h"
+#include <Kaywinnet.h>
 #endif
+  byte mac[6];                    // The MAC address of your Wifi
 
-  WiFi.begin(wifi_ssid, wifi_password);
-  Serial.print("Connecting to ");
-  Serial.print(wifi_ssid);
-  Serial.println(" ...");
-
+  Serial.println(F("\n"));
+  Serial.print(F("Connecting to "));
+  Serial.println(MY_SSID);
+  
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(MY_SSID, MY_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(WiFi.status()); Serial.print(' ');
+    delay(500);
+    Serial.print(WiFi.status()); Serial.print(F(" "));
   }
-
-  Serial.println('\n');
-  Serial.println("Connection established!");
-  Serial.print("IP address:\t");
+  Serial.println(F("\nWiFi connected, "));
+  Serial.print(F("MAC Address: "));
+  Serial.println(WiFi.macAddress());
+  Serial.print(F("IP address: "));
   Serial.println(WiFi.localIP());
 
-  long rssi = WiFi.RSSI();
-  Serial.print("Signal Strength (RSSI):");
-  Serial.println(rssi);
 
-  /*
-    // Optional information:
-    long rssi = WiFi.RSSI();
-    Serial.print(F("RSSI=       "));
-    Serial.println(rssi);
-    Serial.print(F("LocalIP=    "));
-    Serial.println(WiFi.localIP());
-    Serial.print(F("subnetMask= "));
-    Serial.println(WiFi.subnetMask());
-    Serial.print(F("gatewayIP=  "));
-    Serial.println(WiFi.gatewayIP());
-    Serial.print(F("dnsIP=      "));
-    Serial.println(WiFi.dnsIP());
-    Serial.println();
+  // Get the last three numbers of the mac address.
+  // "4C:11:AE:0D:83:86" becomes "0D8386" in macBuffer.
+  WiFi.macAddress(mac);
+  snprintf(macBuffer, sizeof(macBuffer), "%02X%02X%02X", mac[3], mac[4], mac[5]);
+
+  // Build hostName from prefix + last three bytes of the MAC address.
+  strcpy(hostName, NODENAME);
+  strcat(hostName, "-");
+  strcat(hostName, macBuffer);
+  WiFi.hostname(hostName);
+  Serial.print(F("Hostname="));
+  Serial.println(hostName);
+
+
+  /* Some experiments
+    int value = atoi(mac5);
+    Serial.print("------mac5= ");
+    Serial.print(value);
+    Serial.println("----------");
+
+    int numbr = stringChecksum(macBuffer);
+    Serial.print("------Checksum= ");
+    Serial.print(numbr);
+    Serial.println("----------");
+
+    char mac5h[3];
+    sprintf(mac5h, "%x", value);
+    Serial.print("------mac5h= ");
+    Serial.print(mac5h);
+    Serial.println("----------");
   */
 
 }
-
-
-
-// ================================== mqttConnect() =================================
-// Connect or Reconnect to MQTT broker
-void mqttConnect() {
-  // Loop until we're Connected
-  while (!client.connected()) {
-    Serial.print(F("Attempting MQTT connection..."));
-
-    // Attempt to connect
-    if (client.connect(connectName)) {
-      Serial.println(F("connected"));
-
-      client.setCallback(callback);
-
-      //Subscribe or resubscribe to a topic
-      client.subscribe(incomingTopic);
-      Serial.print(F("Subscribing to "));
-      Serial.println(incomingTopic);
-
-      client.subscribe(cmndTopic);
-      Serial.print(F("Subscribing to "));
-      Serial.println(cmndTopic);
-
-      client.subscribe(timeTopic);
-      Serial.print(F("Subscribing to "));
-      Serial.println(timeTopic);
-
-      client.subscribe(temperatureTopic);
-      Serial.print(F("Subscribing to "));
-      Serial.println(temperatureTopic);
-
-      Serial.println();
-    } else {
-      Serial.print(F("failed, rc="));
-      Serial.print(String(client.state()));
-      Serial.println(F(" try again in 5 seconds"));
-      delay(5000);
-    }
-  }
-}
-
-
-
-
-// ==================================  mqtt callback ==================================
-// This function is executed when some device publishes a message to a topic that this ESP8266 is subscribed to.
-// The MQTT payload is the filename of the message to play when the phone is picked up.  The payload is case-sensitive.
-//
-void callback(String topic, byte * payload, unsigned int length) {
-  char message[length + 1];
-
-  // copy contents of payload to message
-  // convert the payload from a byte array to a char array
-  memcpy(message, payload, length);
-  message[length] = '\0';                 // add NULL terminator to message
-
-  // Sometimes in the MQTT tool, I accdentally hit "Enter" on my keyboard.
-  // This removes it.
-  for (i = 0; i == strlen(message); i++) {
-    if (message[i] == 10) {
-      message[i] = '\0';
-      break;
-    }
-  }
-
-
-#ifdef DEBUGM
-  Serial.println();
-  Serial.println();
-  Serial.print(F("Message arrived on topic: "));
-  Serial.print(topic);
-  Serial.println(F("."));
-
-  Serial.print("message: ");
-  Serial.println(message);
-  Serial.print(F("Length= "));
-  Serial.print(strlen(message));
-  Serial.println();
-
-  // If the message terminates in a line-feed, make it the terminating null char.
-  int j = strlen(message) - 1;
-  if (message[j] == 10) message[j] = '\0';
-#endif
-
-  // --------- Incoming Call ---------
-  if (topic == incomingTopic) {               // Incoming call
-    Serial.println();
-    Serial.print(F("Incoming call: "));
-    Serial.println(message);
-
-    strcpy(incomingMessage, message);
-    // Add the file suffix, .wav, if one is not present
-    if (!strchr(incomingMessage, 46)) strcat(incomingMessage, ".wav");
-    ringFlag = true;                          // Start ringing the phone
-  }
-
-
-
-  // --------- Command ---------
-  if (topic == cmndTopic) {                    // Process incoming commands (V8.0.5)
-    //Serial.print(F("received message on cmdTopic: '"));
-    //Serial.print(message);
-    //Serial.println(F("'"));
-
-    if (!strcmp(message, "hangup")) {          // if message=="hangup", then strcmp returns a zero (false).
-      //Terminate the incoming call
-      Serial.println(F("hanging up"));
-      Serial.println();
-      ringFlag = false;
-      ringOFF();                               // De-energizes both bell coils
-
-      //shieldRawLow = 1024;                         // Temp- reset the raw reads
-      //shieldRawHigh = 0;
-
-    }
-
-    // if message=="badfile", then a bad file is sent to the Uno.
-    // This raises the badFile pin on the UNO.
-    if (!strcmp(message, "badfile")) {
-      sendWav("badFile");
-    }
-
-    if (!strcmp(message, "reset")) {          // if message=="reset", then strcmp returns a zero (false).
-      ringFlag = false;
-      ringOFF();                              // De-energizes both bell coils
-      shieldRawLow = 1024;                    // reset the raw reads
-      shieldRawHigh = 0;
-      shieldError = false;
-      filePlaying = false;
-    }
-  }
-
-
-
-  // ----- TimeTopic -----
-  if (topic == timeTopic) {                  // Process incoming commands (V8.0.5)
-    strcpy(popcornTime, message);            // Save the time in case popcorn needs it later.
-  }
-
-  // ----- temperatureTopic -----
-  if (topic == temperatureTopic) {
-    strcpy(wxTemperature, message);      // Save the temperature for future use.
-
-  }
-
-
-}           //callback

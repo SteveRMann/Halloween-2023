@@ -10,7 +10,7 @@ void setup() {
   pinMode(FAN_PIN, OUTPUT);
 
   beginSerial();
-  //setup_wifi();
+  setup_wifi();
   //setup_mqtt();                         //Generate the topics
   client.setServer(mqttServer, mqttPort);
   //mqttConnect();

@@ -17,26 +17,26 @@ void beginSerial() {
 void startTheMotor() {
   analogWrite(MOTOR_PIN, maxTorque);          //Turn on the motor (max torque) to get it started.
   delay(1);
-  ///while (!digitalRead(openSwitch) || !digitalRead(openSwitch)) yield(); //Wait until motor is not on a stop switch.
+  //while (!digitalRead(DUMP_SWITCH) || !digitalRead(LOAD_SWITCH)) yield(); //Wait until motor is not on a stop switch.
   analogWrite(MOTOR_PIN, runTorque);          //Slow it down
 }
 
 
 
 // ---------- Drop the prize ----------
-void openTheLid() {
+void rotateTo180() {
   startTheMotor();
-  while (digitalRead(openSwitch)) yield();     //Wait for the limit switch
+  while (digitalRead(DUMP_SWITCH)) yield();     //Wait for the limit switch
   analogWrite(MOTOR_PIN, 0);                   //Stop the motor
-  ///Serial.println(F("OPEN"));
+  Serial.println(F("Drop"));
 }
 
 // ---------- Load the next prize ----------
-void closeTheLid() {
+void rotateTo360() {
   startTheMotor();
-  while (digitalRead(closedSwitch)) yield();        //Wait for the limit switch
-  analogWrite(MOTOR_PIN, 0);                        //Stop the motor
-  ///Serial.println(F("CLOSED"));
+  while (digitalRead(LOAD_SWITCH)) yield();     //Wait for the limit switch
+  analogWrite(MOTOR_PIN, 0);                   //Stop the motor
+  Serial.println(F("Load"));
 }
 
 

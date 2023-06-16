@@ -13,14 +13,11 @@
 const int LED_ON = 1;
 const int LED_OFF = 0;
 
-const int closedSwitch = D1;              //Limit pin, stops the motor. (yellow)
-const int openSwitch = D2;                //Limit pin, stops the motor. (pink)
-const int MOTOR_PIN = D3;                 //Controls the motor. (violet)
-const int BUTTON_PIN = D4;                //Action button (Also LED_BUILTIN)
-const int EYES_PIN = D5;                  //Eyes
-const int FAN_PIN = D6;                   //Mist fan
-const int BLUE_LED_PIN = D8;              //WiFi Status
-const int LOOP_PIN = D7;                  //Loop button
+const int LOAD_SWITCH = D1;              //Limit pin, stops the motor 1t 180°
+const int DUMP_SWITCH = D2;               //Limit pin, stops the motor at 360°
+const int MOTOR_PIN = D3;                 //Motor PWM
+const int START_PIN = D4;                //Start button
+const int BLUE_LED_PIN = D8;              //Status
 
 int maxTorque = 255;
 int runTorque = 165;
@@ -29,18 +26,18 @@ int runTorque = 165;
 
 const long int MINUTES = 60000;           //ms per minute
 const long int SECONDS = 1000;            //ms per second
-//bool motorOnFlag = false;
 const int MIN_PWM = 200;                  //Anything lower and the motor won't start
 int motorPwm = MIN_PWM;                   //PWM value for motor on.
 
 
 // --------------- button declarations ---------------
-volatile bool buttonFlag = false;         //True when sction button is pressed
-volatile bool loopFlag = false;           //True when loop button is pressed
+volatile bool buttonFlag = false;         //True when start button is pressed
+volatile bool stopFlag = false;           //True when stop switch is hit
 
 
 
-// setup_wifi vars
+
+//--------------- WiFi declarations ---------------
 #include "ESP8266WiFi.h"        // Not needed if also using the Arduino OTA Library...
 #include <Kaywinnet.h>          // WiFi credentials
 char macBuffer[24];             // Holds the last three digits of the MAC, in hex.

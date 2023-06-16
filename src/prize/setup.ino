@@ -1,13 +1,11 @@
 //=============== setup ===============
 void setup() {
-  pinMode(closedSwitch, INPUT_PULLUP);
-  pinMode(openSwitch, INPUT_PULLUP);
-  pinMode (BUTTON_PIN, INPUT_PULLUP);
-  pinMode (LOOP_PIN, INPUT_PULLUP);
+  pinMode(LOAD_SWITCH, INPUT_PULLUP);
+  pinMode(DUMP_SWITCH, INPUT_PULLUP);
+  pinMode (START_PIN, INPUT_PULLUP);
   pinMode(BLUE_LED_PIN, OUTPUT);
   analogWrite(MOTOR_PIN, 0);             //PWM pin, start at zero.
-  pinMode(EYES_PIN, OUTPUT);
-  pinMode(FAN_PIN, OUTPUT);
+
 
   beginSerial();
   setup_wifi();
@@ -16,15 +14,10 @@ void setup() {
   //mqttConnect();
 
 
-  //Lid
-  Serial.println(F("Test the lid."));
-  loopFlag = false;
-  openTheLid();
+  Serial.println(F("Rotate once"));
+  rotateTo180();
   delay(1000);
-  closeTheLid();
-
-  loopFlag = false;
-
+  rotateTo360();
 
 
   /*

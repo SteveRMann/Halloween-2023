@@ -20,12 +20,11 @@ void setup() {
   //  rotateTo360();
 
   attachInterrupt(START_PIN, startButtonHandler, RISING);
-  
+
   Serial.println(F("Motor running"));
   startTheMotor();
-  delay(1000);
-  analogWrite(MOTOR_PIN, 0);                   //Stop the motor
-  Serial.println(F("Motor stopped"));
+  rotateTo360();
+  Serial.println(F("Motor stopped at 360°"));
 
 
   /*

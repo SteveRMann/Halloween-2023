@@ -18,18 +18,20 @@ void setup_wifi() {
 #ifndef Kaywinnet
 #include <Kaywinnet.h>
 #endif
-  byte mac[6];                    // The MAC address of your Wifi
+  byte mac[6];                        // The MAC address of your Wifi
 
   Serial.println(F("\n"));
   Serial.print(F("Connecting to "));
   Serial.println(MY_SSID);
-  
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(MY_SSID, MY_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
+    blueTicker.attach(0.1, blueTick);   // Start blueTick() while we connect
     delay(500);
     Serial.print(WiFi.status()); Serial.print(F(" "));
   }
+  blueTicker.detach();                     // Stop blueTick()
   Serial.println(F("\nWiFi connected, "));
   Serial.print(F("MAC Address: "));
   Serial.println(WiFi.macAddress());

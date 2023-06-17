@@ -2,8 +2,9 @@
 void loop() {
  //mqttReconnect();          //Make sure we stay connected to the mqtt broker
 
-  if (buttonFlag) {
-    Serial.println(F("Action button pressed"));
-    buttonFlag = false;
+  if (startButtonFlag) {
+    Serial.println(F("Start button pressed"));
+    startButtonFlag = false;
+    rotateTo360();
   }
 }

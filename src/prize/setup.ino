@@ -1,7 +1,7 @@
 //=============== setup ===============
 void setup() {
-  pinMode(LOAD_SWITCH, INPUT_PULLUP);
-  pinMode(DUMP_SWITCH, INPUT_PULLUP);
+  pinMode(SWITCH_180, INPUT_PULLUP);
+  pinMode(SWITCH_360, INPUT_PULLUP);
   pinMode (START_PIN, INPUT_PULLUP);
   pinMode(BLUE_LED_PIN, OUTPUT);
   analogWrite(MOTOR_PIN, 0);             //PWM pin, start at zero.
@@ -9,15 +9,23 @@ void setup() {
 
   beginSerial();
   setup_wifi();
-  //setup_mqtt();                         //Generate the topics
+  //setup_mqtt();                         //Generate the MQTT topics
   client.setServer(mqttServer, mqttPort);
   //mqttConnect();
 
 
-  Serial.println(F("Rotate once"));
-  rotateTo180();
+  //  Serial.println(F("Rotate once"));
+  //  rotateTo180();
+  //  delay(1000);
+  //  rotateTo360();
+
+  attachInterrupt(START_PIN, startButtonHandler, RISING);
+  
+  Serial.println(F("Motor running"));
+  startTheMotor();
   delay(1000);
-  rotateTo360();
+  analogWrite(MOTOR_PIN, 0);                   //Stop the motor
+  Serial.println(F("Motor stopped"));
 
 
   /*

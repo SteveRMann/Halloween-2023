@@ -16,8 +16,8 @@ void beginSerial() {
 // ========= Start the motor =========
 void startTheMotor() {
   analogWrite(MOTOR_PIN, maxTorque);          //Turn on the motor (max torque) to get it started.
-  delay(1);
-  //while (!digitalRead(DUMP_SWITCH) || !digitalRead(LOAD_SWITCH)) yield(); //Wait until motor is not on a stop switch.
+  delay(10);
+  //while (!digitalRead(SWITCH_360) || !digitalRead(SWITCH_180)) yield(); //Wait until motor is not on a stop switch.
   analogWrite(MOTOR_PIN, runTorque);          //Slow it down
 }
 
@@ -26,36 +26,39 @@ void startTheMotor() {
 // ---------- Drop the prize ----------
 void rotateTo180() {
   startTheMotor();
-  while (digitalRead(DUMP_SWITCH)) yield();     //Wait for the limit switch
+  while (digitalRead(SWITCH_180)) yield();     //Wait for the limit switch
   analogWrite(MOTOR_PIN, 0);                   //Stop the motor
-  Serial.println(F("Drop"));
+  Serial.println(F("Stop at 180°"));
 }
 
 // ---------- Load the next prize ----------
 void rotateTo360() {
   startTheMotor();
-  while (digitalRead(LOAD_SWITCH)) yield();     //Wait for the limit switch
+  while (digitalRead(SWITCH_360)) yield();     //Wait for the limit switch
   analogWrite(MOTOR_PIN, 0);                   //Stop the motor
-  Serial.println(F("Load"));
+  Serial.println(F("Stop at 360°"));
 }
 
 
 
 
-// ---------- button handlers ----------
 
-// Action Button Interrupt Handler
-IRAM_ATTR void actionButtonHandler() {
+// ---------- interrupt handlers ----------
+
+// Start Button Interrupt Handler
+IRAM_ATTR void startButtonHandler() {
   static unsigned long last_interrupt_time = 0;
   unsigned long interrupt_time = millis();
   //Debounce
   if (interrupt_time - last_interrupt_time > 250)
   {
-    buttonFlag = true;
+    startButtonFlag = true;
   }
   last_interrupt_time = interrupt_time;
 }
 
+
+/*
 // Loop Button Interrupt Handler
 IRAM_ATTR void loopButtonHandler() {
   static unsigned long last_interrupt_time = 0;
@@ -63,7 +66,8 @@ IRAM_ATTR void loopButtonHandler() {
   //Debounce
   if (interrupt_time - last_interrupt_time > 250)
   {
-    loopFlag = true;
+//    loopFlag = true;
   }
   last_interrupt_time = interrupt_time;
 }
+*/

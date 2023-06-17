@@ -13,14 +13,14 @@
 const int LED_ON = 1;
 const int LED_OFF = 0;
 
-const int LOAD_SWITCH = D1;              //Limit pin, stops the motor 1t 180°
-const int DUMP_SWITCH = D2;               //Limit pin, stops the motor at 360°
-const int MOTOR_PIN = D3;                 //Motor PWM
+const int SWITCH_180 = D2;               //Limit pin, stops the motor 1t 180°
+const int SWITCH_360 = D1;               //Limit pin, stops the motor at 360°
+const int MOTOR_PIN = D3;                //Motor PWM
 const int START_PIN = D4;                //Start button
-const int BLUE_LED_PIN = D8;              //Status
+const int BLUE_LED_PIN = D8;             //Status
 
 int maxTorque = 255;
-int runTorque = 165;
+int runTorque = 100;
 
 
 
@@ -31,9 +31,7 @@ int motorPwm = MIN_PWM;                   //PWM value for motor on.
 
 
 // --------------- button declarations ---------------
-volatile bool buttonFlag = false;         //True when start button is pressed
-volatile bool stopFlag = false;           //True when stop switch is hit
-
+volatile bool startButtonFlag = false;         //True when start button is pressed
 
 
 

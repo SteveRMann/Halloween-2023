@@ -23,13 +23,6 @@ int maxTorque = 255;
 int runTorque = 100;
 
 
-
-const long int MINUTES = 60000;           //ms per minute
-const long int SECONDS = 1000;            //ms per second
-const int MIN_PWM = 200;                  //Anything lower and the motor won't start
-int motorPwm = MIN_PWM;                   //PWM value for motor on.
-
-
 // --------------- button declarations ---------------
 volatile bool startButtonFlag = false;         //True when start button is pressed
 

@@ -1,6 +1,7 @@
 //=============== loop ===============
 void loop() {
- //mqttReconnect();          //Make sure we stay connected to the mqtt broker
+  ArduinoOTA.handle();
+  //mqttReconnect();          //Make sure we stay connected to the mqtt broker
 
   //Start rotating, stop at 180° briefly then continue to 360°
   if (startButtonFlag) {

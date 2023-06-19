@@ -13,11 +13,7 @@ void setup() {
   client.setServer(mqttServer, mqttPort);
   //mqttConnect();
 
-
-  //  Serial.println(F("Rotate once"));
-  //  rotateTo180();
-  //  delay(1000);
-  //  rotateTo360();
+  start_OTA();
 
   attachInterrupt(START_PIN, startButtonHandler, RISING);
 

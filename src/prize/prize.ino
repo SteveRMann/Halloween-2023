@@ -1,4 +1,4 @@
-#define SKETCH "prize.ino"
+ #define SKETCH "prize.ino"
 #define VERSION "1.0"
 #define NODENAME "prize"
 
@@ -21,6 +21,10 @@ const int BLUE_LED_PIN = D8;             //Status
 
 int maxTorque = 255;
 int runTorque = 100;
+
+
+// --------------- OTA declarations --------------- 
+#include <ArduinoOTA.h>
 
 
 // --------------- button declarations ---------------

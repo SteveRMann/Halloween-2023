@@ -1,0 +1,65 @@
+# This is part of our Halloween setup where the Trick or Treaters
+# will press a button to get a prize delivered.
+#
+substitutions:
+  device_name: prize-delivery
+  friendly_name: prize_delivery
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+packages:
+  wifi: !include common/wifi.yaml
+  device_base: !include common/esp8266.yaml
+
+#Override the package:
+esp8266:
+  board: d1_mini  
+
+web_server:
+  port: 80
+
+
+#======================================================
+
+# A binary_sensor is a physical switch or button.
+# The start button closes the relay which controls the motor
+binary_sensor:
+  - platform: gpio
+    name: ${device_name} start
+    pin:
+      number: D4
+      mode: input_pullup
+      inverted: True
+    id: button_start
+    on_press:
+      then:
+        - switch.turn_on: relay
+
+
+  # Microswitch at the home position..
+  # The switch closes when the motor is at the home (load) position.
+  - platform: gpio
+    name: ${device_name} home
+    pin:
+      number: D1
+      mode: input_pullup
+      inverted: True
+    id: button_home
+    on_press:
+      then:
+        - switch.turn_off: relay
+
+
+#  - platform: status
+#    name: ${device_name} status
+#    #internal: true  ##  Hide from Home Assistant
+
+#The motor relay is connected to pin D3
+switch:
+  - platform: gpio
+    name: ${device_name} relay
+    pin: D3
+    id: relay
+

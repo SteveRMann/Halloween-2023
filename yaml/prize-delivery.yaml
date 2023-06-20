@@ -43,7 +43,7 @@ binary_sensor:
   - platform: gpio
     name: ${device_name} home
     pin:
-      number: D1
+      number: D2
       mode: input_pullup
       inverted: True
     id: button_home
@@ -60,6 +60,6 @@ binary_sensor:
 switch:
   - platform: gpio
     name: ${device_name} relay
-    pin: D3
+    pin: D1
     id: relay
 

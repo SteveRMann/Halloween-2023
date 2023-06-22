@@ -36,7 +36,16 @@ binary_sensor:
     on_press:
       then:
         - switch.turn_on: relay
-
+        - delay: 2s
+        - switch.turn_on: led1
+        - delay: 2s
+        - switch.turn_on: led2
+        - delay: 2s
+        - switch.turn_on: led3
+        - delay: 2s
+        - switch.turn_on: led4
+        - delay: 2s
+        - switch.turn_on: led5
 
   # Microswitch at the home position..
   # The switch closes when the motor is at the home (load) position.
@@ -50,16 +59,57 @@ binary_sensor:
     on_press:
       then:
         - switch.turn_off: relay
+        - switch.turn_off: led1
+        - switch.turn_off: led2
+        - switch.turn_off: led3
+        - switch.turn_off: led4
+        - switch.turn_off: led5
 
 
-#  - platform: status
-#    name: ${device_name} status
-#    #internal: true  ##  Hide from Home Assistant
-
-#The motor relay is connected to pin D3
 switch:
   - platform: gpio
     name: ${device_name} relay
-    pin: D1
+    pin:
+      number: D1
+      mode: output
     id: relay
 
+  - platform: gpio
+    name: ${device_name} led1
+    pin:
+      number: D0
+      mode: output
+    id: led1
+
+  - platform: gpio
+    name: ${device_name} led2
+    pin:
+      number: D6
+      mode: output
+    id: led2
+
+  - platform: gpio
+    name: ${device_name} led3
+    pin:
+      number: D7
+      mode: output
+    id: led3
+
+  - platform: gpio
+    name: ${device_name} led4
+    pin:
+      number: GPIO1
+      mode: output
+    id: led4
+
+  - platform: gpio
+    name: ${device_name} led5
+    pin:
+      number: GPIO3
+      mode: output
+    id: led5
+
+status_led:
+  pin:
+    number: D5                    #External status LED
+    inverted: True

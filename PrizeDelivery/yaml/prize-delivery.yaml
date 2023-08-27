@@ -73,6 +73,7 @@ switch:
       number: D1
       mode: output
     id: relay
+    internal : true
 
   - platform: gpio
     name: ${device_name} led1
@@ -80,6 +81,7 @@ switch:
       number: D0
       mode: output
     id: led1
+    internal : true
 
   - platform: gpio
     name: ${device_name} led2
@@ -87,6 +89,7 @@ switch:
       number: D6
       mode: output
     id: led2
+    internal : true
 
   - platform: gpio
     name: ${device_name} led3
@@ -94,22 +97,27 @@ switch:
       number: D7
       mode: output
     id: led3
+    internal : true
 
   - platform: gpio
     name: ${device_name} led4
     pin:
-      number: GPIO1
+      number: GPIO1     # Tx
       mode: output
     id: led4
+    internal : true
 
   - platform: gpio
     name: ${device_name} led5
     pin:
-      number: GPIO3
+      number: GPIO3     # Rx
       mode: output
     id: led5
+    internal : true
 
 status_led:
   pin:
     number: D5                    #External status LED
     inverted: True
+    
+    

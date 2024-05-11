@@ -1,0 +1,107 @@
+## Wemos-test.yaml ##
+# copied from doorbell_chime.yaml
+
+substitutions:
+  device_name: wemos-test
+  friendly_name: wemos_test
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+packages:
+  wifi: !include common/wifi.yaml
+  device_base: !include common/esp8266.yaml
+#Override the default board:
+esp8266:
+  board: d1_mini  
+
+light:
+  - platform: status_led
+    name: ${device_name} status
+    id: ready
+    pin: D1  
+
+#############################################
+switch:      
+  - platform: restart
+    name: ${device_name} restart
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: D5
+      mode: INPUT_PULLUP
+      inverted: True
+    name: Play-1
+    on_press:
+      then:
+        - dfplayer.play:
+            file: 1    
+
+  - platform: gpio
+    pin:
+      number: D6
+      mode: INPUT_PULLUP
+      inverted: True
+    name: Play-2
+    on_press:
+      then:
+        - dfplayer.play:
+            file: 2    
+
+  - platform: gpio
+    pin:
+      number: D2
+      mode: INPUT_PULLUP
+      inverted: True
+    name: Play-3
+    on_press:
+      then:
+        - dfplayer.play:
+            file: 3
+
+  - platform: gpio
+    pin:
+      number: D3
+      mode: INPUT_PULLUP
+      inverted: True
+    name: Play-4
+    on_press:
+      then:
+        - dfplayer.play:
+            file: 4
+
+
+# dfplayer #######################################################
+uart:
+  tx_pin: D8
+  rx_pin: D7
+  baud_rate: 9600
+
+dfplayer:
+  on_finished_playback:
+    then:
+      logger.log: 'Playback finished event'
+
+api:
+  services:
+  - service: dfplayer_play
+    variables:
+      file: int
+    then:
+      - dfplayer.play: !lambda 'return file;'
+
+  - service: dfplayer_set_volume
+    variables:
+      volume: int
+    then:
+      - dfplayer.set_volume: !lambda 'return volume;'
+
+  - service: dfplayer_reset
+    then:
+      - dfplayer.reset
+
+  - service: dfplayer_stop
+    then:
+      - dfplayer.stop

@@ -1,0 +1,121 @@
+# This is the chair servo for the 2023 Halloween props.
+
+# PWM Output is on GPIO2
+# A button can be added to GPIO0
+
+substitutions:
+  device_name: freds-chair
+  friendly_name: freds_chair
+
+packages:
+  wifi: !include common/wifi.yaml
+  device_base: !include common/esp8266.yaml
+
+esphome:
+  on_boot:
+    priority: -100.0
+    then:
+      - delay: 500ms
+      - script.execute: look_left
+      - delay: 2000ms
+      - script.execute: look_right
+      - delay: 2000ms
+      - script.execute: move_to_zero
+
+######################################################
+
+output:
+  - platform: esp8266_pwm
+    id: pwm_output
+    pin: 2
+    frequency: 50 Hz
+
+servo:
+  - id: servo_signal
+    output: pwm_output
+    restore: true
+
+number:
+  - platform: template
+    name: ${friendly_name} servo control
+    min_value: -100
+    max_value: 100
+    step: 1
+    set_action:
+      then:
+        - servo.write:
+            id: servo_signal
+            level: !lambda 'return x / 100.0;'
+            
+button:
+  - platform: template
+    name: ${friendly_name} zero
+    icon: "mdi:liquid-spot"
+    on_press:
+      then:
+        - script.execute: move_to_zero
+
+  - platform: template
+    name: ${friendly_name} look left
+    icon: "mdi:liquid-spot"
+    on_press:
+      then:
+        - script.execute: look_left
+
+  - platform: template
+    name: ${friendly_name} look right
+    icon: "mdi:liquid-spot"
+    on_press:
+      then:
+        - script.execute: look_right
+
+
+# trigger the look_left script when the "binary_sensor.prize_delivered_prize_delivered_switch" entity changes its state.
+binary_sensor:
+  - platform: homeassistant
+    entity_id: binary_sensor.prize_delivered_prize_delivered_switch
+    name: ${friendly_name} Prize Delivered
+    on_release:
+      then:
+        - script.execute: look_left
+        - delay: 6s
+        - script.execute: look_right
+        - delay: 300s
+        - script.execute: move_to_zero
+
+
+#Pressing the button on GPIO0 returns the servo to zero.
+#binary_sensor:
+#  - platform: gpio
+#    name: ${friendly_name} action_button
+#    pin:
+#      number: 0
+#      mode: input_pullup
+#      inverted: True
+#    id: button_fire
+#    on_press:
+#      then:
+#        - script.execute: move_to_zero
+    
+
+script:
+  - id: move_to_zero
+    then:
+      - servo.write:
+          id: servo_signal
+          level: 0%
+
+  - id: look_left
+    then:
+      - servo.write:
+          id: servo_signal
+          level: -100%
+
+  - id: look_right
+    then:
+      - servo.write:
+          id: servo_signal
+          level: 100%
+
+
+
